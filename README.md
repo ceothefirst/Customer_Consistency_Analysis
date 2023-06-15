@@ -12,8 +12,11 @@
 
 ## Files Included
 . Story_line : This gives a run down of the case problem and the physical steps taken to find solutions
+
 . Consistency_Analysis.ipynb : This Jupyter Notebook file has an extensive breakdown of the python techniques adopted for this project.
+
 . Query consistency data.csv : This is the raw business data file, sourced from it's google sheet file using SQL in google sheets to select relevant tables.
+
 
 ## Skills involved
 . SQL
