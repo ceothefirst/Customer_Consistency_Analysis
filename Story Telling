@@ -1,4 +1,11 @@
 **Problem Statement:**
-
 As a Data analyst, I was tasked by a leading crypto-exchange company to analyze their customer data and identify trends related to customer consistency ratios.
 The company's goal was to reward its most loyal customers with exclusive bonus packages based on their consistent performance in generating revenue and conducting transactions using their website.
+
+**Approach and Solution:**
+**The solution requires a range of tools within the data analyst/scientist toolbox. 
+One of which is a technical mindset for thinking critically and breaking down large problems into smaller steps and focusing all resources to achieving these goals, one step at a time.**
+
+For better understanding, everything will be explained in such a way that even those who have little or no experience with programming langauages can understand, 
+In this project, I follow the preferred model in the Google Data Analytics Certificate course to approach the problem,
+giving the steps and the processes involved in taking a business problem to the point where we give stakeholders value for their money.
