@@ -1,0 +1,617 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+### Import the Dataset
+
+#import the daatset
+df = pd.read_csv('/Users/ceo/Downloads/Query Data  - Sheet1 (1).csv')
+df
+
+#begin EDA by checking for Nan values in the dataset
+df.isna().sum()
+
+#check the number of rows and columns availabe
+df.shape
+
+#confirm all dtypes are correct for each column, 
+#also count non null values
+df.info()
+
+### Data Cleaning
+
+#columns not in right dtype format are; 
+#order_date,
+#coin_amount,
+#order_time,
+#amount_due,
+#date_paid,
+#time_paid,
+#month
+df.order_date = pd.to_datetime(df.order_date)
+df.order_date
+
+#discovered that all records in this coin_amount field has a '$' attached 
+# & ',' in between.
+df['coin_amount(usd)'] = df['coin_amount(usd)'].str.replace("$","")
+df['coin_amount(usd)'] = df['coin_amount(usd)'].str.replace(",","")
+df['coin_amount(usd)'] = df['coin_amount(usd)'].astype(float)
+df['coin_amount(usd)'] 
+
+#order_time was converted to datetime dtype
+df.order_time = pd.to_datetime(df.order_time)
+df.order_time 
+
+##discovered that all records in this amount_due field
+#has a 'N' attached  & ',' in between.
+df['amount_due(ngn)'] = df['amount_due(ngn)'].str.replace("₦","")
+df['amount_due(ngn)'] = df['amount_due(ngn)'].str.replace(",","")
+df['amount_due(ngn)'] = df['amount_due(ngn)'].astype(float)
+df['amount_due(ngn)']
+
+#date_paid converted into datetime
+df.date_paid = pd.to_datetime(df.date_paid)
+df.date_paid
+
+df
+
+#have a look at the entire dataframe once again
+df
+
+#now begin to clean nan values
+df.isna().sum()
+
+df[df.customer_name.isna()]
+
+#find Nan values in customer_name column
+#drop records with Nan values
+df.customer_name = df.customer_name.dropna()
+df.isna().sum()
+
+#drop all irrelvant columns to this analysis
+#eg. trxn_batch_id
+df.drop(inplace = True,columns ='trxn_batch_id')
+df.isna().sum()
+
+#check Nan values in sender_wallet column
+df[df.sender_wallet.isna()]
+
+
+#copy dataframe before dropping cells
+df1 = df
+#drop all Nan values that are highly relevant to your analysis
+df1 = df1.dropna(subset = ['sender_wallet',
+                           'customer_name',
+                           'coin_amount(usd)',
+                           'purchase_rate(ngnusd)',
+                           'amount_due(ngn)',
+                           'date_paid',
+                           'order_time',])
+
+df1.sender_wallet.isna().sum()
+
+df1.isna().sum()
+
+#fill order_time with avg order time
+df1.order_time.mean()
+df1.order_time.fillna('2023-05-14 14:16:02.395624448',inplace=True)
+df1.order_time = pd.to_datetime(df1.order_time)
+df1.order_time = df1.order_time.dt.time
+df1.order_time
+
+#confirm the dtype for order_date
+df1.order_date.dtype
+
+#to fill the time column with mode of time_paid
+df1.time_paid.mode()
+#now, fill with mode time_paid
+df1.time_paid.fillna('5:34:01 AM',inplace=True)
+
+df1.time_paid = pd.to_datetime(df1.time_paid)
+df1.time_paid = df1.time_paid.dt.time
+df1.time_paid
+
+#check dataframe again for Nan Values
+df1.isna().sum()
+
+#check for unique content of the channel column
+df1.channel.unique()
+
+#check for rows that show nan
+df1[df1.channel.isna()]
+
+
+#drop Nan Values from channel column because they have only little amounts 
+#and may add no signifcant value to our analysis
+df2 = df1[~df1.channel.isna()]
+
+# hence we create a new dataframe.
+df2
+
+#check that our new dataframe has no Nan values
+df2.isna().sum()
+
+-----
+
+### Data Wrangling & Data Manipulation
+
+#Great!, We have a clean Dataset
+#Now we can begin to analyze our data
+
+df2.columns
+
+#What are the targets of our analysis?
+#We are to analyze our data in group of months for all paid transactions
+
+
+#use the order_date column to recreate the month column
+#this is a accuracy pre-emptive measure 
+#as we aren't sure of the accuracy of the data from it's database source.
+#so we recreate data from whahtever column we have used before.
+#this will assure maximum correctness in the data.
+df2.month = pd.to_datetime(df2.order_date)
+df2.month = df2.month.dt.month_name()
+
+
+
+#confirm month
+df2.month
+
+#confirm year
+df2['year'] = df2.order_date.dt.year
+df2['year']
+
+#create a month-year column 
+df2['month_year'] = df2['month'].astype(str)+ '-' + df2['year'].astype(str)
+df2['month_year']
+
+#After grouping by months, delete all unpaid orders, 
+#all incomplete orders & all p2p vendor orders
+#confirm their status
+df3=df2[(df2.order_status=='Paid')
+        &(df2['completed?'])==True
+        & (df2.customer_name!='P2P Vendor')]
+
+
+
+
+df3.customer_name.unique()
+
+#Now we can use grouping by our surrogate key
+df4 = df3.groupby('month_year')
+
+#create and store dataframes by each month
+Jan_2022_sales_data = df4.get_group('January-2022')
+Feb_2022_sales_data = df4.get_group('February-2022')
+Mar_2022_sales_data = df4.get_group('March-2022')
+Apr_2022_sales_data = df4.get_group('April-2022')
+May_2022_sales_data = df4.get_group('May-2022')
+Jun_2022_sales_data = df4.get_group('June-2022')
+July_2022_sales_data = df4.get_group('July-2022')
+Aug_2022_sales_data = df4.get_group('August-2022')
+Sep_2022_sales_data = df4.get_group('September-2022')
+Oct_2022_sales_data = df4.get_group('October-2022')
+Nov_2022_sales_data = df4.get_group('November-2022')
+Dec_2022_sales_data = df4.get_group('December-2022')
+Jan_2023_sales_data = df4.get_group('January-2023')
+Feb_2023_sales_data = df4.get_group('February-2023')
+Mar_2023_sales_data = df4.get_group('March-2023')
+Apr_2023_sales_data = df4.get_group('April-2023')
+May_2023_sales_data = df4.get_group('May-2023')
+
+
+
+----
+
+#### Analysis Begins  
+
+#Find the sales rev & sales count for Jan-2022
+Jan_2022_sales_data
+
+#Identify January_2022 sales average 
+Jan_2022_sales_rev_avg = Jan_2022_sales_data['coin_amount(usd)'].mean()
+Jan_2022_sales_rev_avg
+
+#Identify Jan_2022 sales above average sales
+Jan_2022_sales_rev = Jan_2022_sales_data.groupby(
+    ['customer_name'])['coin_amount(usd)'
+                      ].sum().sort_values(ascending=True)
+Jan_2022_sales_rev =  Jan_2022_sales_rev[
+    (Jan_2022_sales_rev.values>=Jan_2022_sales_rev_avg)]
+Jan_2022_sales_rev
+
+
+#Bar graph showing customers above avg sales
+x = Jan_2022_sales_rev.index
+y = Jan_2022_sales_rev.values
+plt.barh(x,y)
+plt.xticks(rotation=90)
+plt.title('Jan_2022 rev_by_cstmr above avg rev (usd)')
+plt.show()
+
+#Identify Jan_2022 sales count average
+Jan_2022_sales_count_avg = Jan_2022_sales_data[
+    'customer_name'].value_counts().mean()
+Jan_2022_sales_count_avg
+
+#Identify Jan_2022 customers above avg sales count
+Jan_2022_sales_count = Jan_2022_sales_data[
+    'customer_name'].value_counts().sort_values(ascending=True)
+Jan_2022_sales_count = Jan_2022_sales_count[
+    Jan_2022_sales_count.values>=Jan_2022_sales_count_avg]
+Jan_2022_sales_count
+
+#Bar graph showing customers above avg sales count
+x = Jan_2022_sales_count.index
+y = Jan_2022_sales_count.values
+plt.barh(x,y)
+plt.xticks(rotation=90)
+plt.title('Jan_2022 sales_count_by_cstmr above avg count')
+plt.show()
+
+#Convert sales revenue to dataframe
+Jan_2022_sales_rev = Jan_2022_sales_rev.reset_index()
+Jan_2022_sales_rev
+
+#Convert sales count to dataframe
+Jan_2022_sales_count = Jan_2022_sales_count.reset_index()
+Jan_2022_sales_count
+
+#Rename the both column headers for easy merging
+Jan_2022_sales_count.rename(columns = {
+    'index':'customer_name','customer_name':'sales_count'},inplace=True)
+Jan_2022_sales_rev.rename(columns = {
+    'coin_amount(usd)':'sales_rev'},inplace=True)
+
+Jan_2022_sales_count
+
+Jan_2022_sales_rev
+
+----
+
+## Merge DataFrames to meet Stakeholders criteria
+
+#Perform merge on all data so you get the dataframe of only customers
+#who meet both criteria
+jan_22_df= Jan_2022_sales_rev.merge(Jan_2022_sales_count)
+jan_22_df
+
+#Now use plot 
+x = jan_22_df.customer_name
+y1 = jan_22_df.sales_rev
+y2 = jan_22_df.sales_count
+plt.figure(figsize=(10,6))
+
+plt.subplot(1,2,1)
+plt.bar(x,y1, width = 0.8,color = 'purple')
+plt.xticks(rotation =90)
+plt.title('SALES_REV')
+
+plt.subplot(1,2,2)
+plt.bar(x,y2, width = 0.8,color = 'orange')
+plt.xticks(rotation = 90)
+plt.title('SALES_COUNT')
+
+#plt.title('chart showing sales_rev to sales_count 
+#for ONLY consistent cstmrs in Jan-2022')
+plt.suptitle('Jan_2022')
+plt.show()
+
+----
+
+### Now define a function based on these steps to automate the results for each month.
+
+def month_group(df):
+    sales_rev_avg = df['coin_amount(usd)'].mean()
+    sales_rev = df.groupby(['customer_name'])[
+        'coin_amount(usd)'].sum().sort_values(ascending=True)
+    sales_rev = sales_rev[
+        ( sales_rev>=sales_rev_avg)]
+    sales_count_avg = df['customer_name'].value_counts().mean()
+    sales_count = df[
+        'customer_name'].value_counts().sort_values(ascending=True)
+    sales_count= sales_count[sales_count.values>=sales_count_avg]
+    sales_rev = sales_rev.reset_index()
+    sales_count = sales_count.reset_index()
+    sales_count.rename(columns = {
+        'index':'customer_name','customer_name':'sales_count'},inplace=True)
+    sales_rev.rename(columns = {
+        'coin_amount(usd)':'sales_rev'},inplace=True)
+    df1 = sales_rev.merge(sales_count)
+    return df1
+
+#### Testing our function with Feb_2022 data
+
+feb_22_df = month_group(Feb_2022_sales_data)
+feb_22_df
+
+----
+
+### Now Write a function to plot each dataframe to automate our graphs
+
+
+#### We start with February-2022
+
+month_year = 'Feb_2022'
+
+def plot_df(df,month_year):
+    x = df.customer_name
+    y1 = df.sales_rev
+    y2 = df.sales_count
+    plt.figure(figsize=(10,6))
+    plt.subplot(1,2,1)
+    plt.bar(x,y1, width = 0.8, color='purple')
+    plt.xticks(rotation =90)
+    plt.title('SALES_REV')
+    plt.subplot(1,2,2)
+    plt.bar(x,y2, width = 0.8,color = 'orange')
+    plt.xticks(rotation = 90)
+    plt.title('SALES_COUNT')
+    plt.suptitle(month_year)
+    return plt.show()
+
+plot_df(feb_22_df,month_year)
+
+----
+
+### Use DataFrame & Graph function to get results for each month
+
+#### March-2022
+
+#Get the Dataframe
+mar_22_df = month_group(Mar_2022_sales_data)
+mar_22_df
+
+#Plot
+plot_df(mar_22_df,'Mar_2022')
+
+----
+
+### `You can see that in two functions, we have summarized our results. We continue`
+
+#### For April-2022
+
+#Get the Dataframe
+apr_22_df = month_group(Apr_2022_sales_data)
+apr_22_df
+
+#Plot
+plot_df(apr_22_df,'Apr_2022')
+
+-----
+
+#### For May-2022
+
+#Get the Dataframe
+may_22_df = month_group(May_2022_sales_data)
+may_22_df
+
+#Plot
+plot_df(may_22_df,'May_2022')
+
+----
+
+#### For June-2022
+
+#Get the Dataframe
+jun_22_df = month_group(Jun_2022_sales_data)
+jun_22_df
+
+#Plot
+plot_df(jun_22_df,'Jun_2022')
+
+----
+
+#### For July-2022
+
+#Get the Dataframe
+jul_22_df = month_group(July_2022_sales_data)
+jul_22_df
+
+#Plot
+plot_df(jul_22_df,'July_2022')
+
+----
+
+#### For Aug-2022
+
+#Get the Dataframe
+aug_22_df = month_group(Aug_2022_sales_data)
+aug_22_df
+
+#Plot
+plot_df(aug_22_df,'Aug_2022')
+
+-----
+
+#### For Sep-2022
+
+#Get the Dataframe
+sep_22_df = month_group(Sep_2022_sales_data)
+sep_22_df
+
+#Plot
+plot_df(sep_22_df,'Sep_2022')
+
+-----
+
+#### For Oct-2022
+
+#Get the Dataframe
+oct_22_df = month_group(Oct_2022_sales_data)
+oct_22_df
+
+#Plot
+plot_df(oct_22_df,'Oct_2022')
+
+-----
+
+#### For Nov-2022
+
+#Get the Dataframe
+nov_22_df = month_group(Nov_2022_sales_data)
+nov_22_df
+
+#Plot
+plot_df(nov_22_df,'Nov_2022')
+
+------
+
+#### For Dec-2022
+
+#Get the Dataframe
+dec_22_df = month_group(Dec_2022_sales_data)
+dec_22_df
+
+#Plot
+plot_df(dec_22_df,'Dec_2022')
+
+------
+
+#### For Jan-2023
+
+#Get the Dataframe
+jan_23_df = month_group(Jan_2023_sales_data)
+jan_23_df
+
+#Plot
+plot_df(jan_23_df,'Jan_2023')
+
+-----
+
+#### For Feb-2023
+
+#Get the Dataframe
+feb_23_df = month_group(Feb_2023_sales_data)
+feb_23_df
+
+#Plot
+plot_df(feb_23_df,'Feb_2023')
+
+-----
+
+#### For Mar-2023
+
+#Get the Dataframe
+mar_23_df = month_group(Mar_2023_sales_data)
+mar_23_df
+
+#Plot
+plot_df(mar_23_df,'Mar_2023')
+
+----
+
+#### For April-2023
+
+#Get the Dataframe
+apr_23_df = month_group(Apr_2023_sales_data)
+apr_23_df
+
+#Plot
+plot_df(apr_23_df,'Apr_2023')
+
+-----
+
+#### For May-2023
+
+#Get the Dataframe
+may_23_df = month_group(May_2023_sales_data)
+may_23_df
+
+#Plot
+plot_df(may_23_df,'May_2023')
+
+-----
+
+### To finalize,  we are to select customers who have consistently met our Sales_Rev & Sales_Count for at least (6) six months
+
+#Append all DataFrames for each month to get a series 
+#containing each customer name from every month
+
+results = jan_22_df.customer_name.append([
+    feb_22_df.customer_name,
+    mar_22_df.customer_name,
+    apr_22_df.customer_name,
+    may_22_df.customer_name,
+    jun_22_df.customer_name,
+    jul_22_df.customer_name,
+    aug_22_df.customer_name,
+    sep_22_df.customer_name,
+    oct_22_df.customer_name,
+    nov_22_df.customer_name,
+    dec_22_df.customer_name,
+    jan_23_df.customer_name,
+    feb_23_df.customer_name,
+    mar_23_df.customer_name,
+    apr_23_df.customer_name,
+    may_23_df.customer_name
+])
+results
+
+----
+
+### Finally, Our result is returned in a list
+
+results = results.value_counts()[results.value_counts().values>=6]
+
+#We convert out result to a DataFrame
+results = results.reset_index()
+results.rename(columns = {
+    'index':'customer_name','customer_name':'no_of_consistent_months'},inplace =True)
+results
+
+#Plot results
+results.sort_values(by ='no_of_consistent_months',ascending=False)
+#
+plt.figure(figsize=(8,6))
+x=results.customer_name
+y=results.no_of_consistent_months
+plt.bar(x,y,color='green')
+plt.xticks(rotation=90)
+plt.ylabel('no. of months')
+
+plt.title('Chart showing Consistent Customers (6 month abv Consistency avg)')
+plt.show()
+
+df3
+
+results.customer_name
+
+df7 = df3[df3.customer_name.isin(['Monica Federle',
+                            'Dan Reichenbach',
+                            'Fred Wasserman',
+                            'Shahid Shariari',
+                            'Luke Weiss',
+                            "'Meg O'Connel",
+                            'Muhammed MacIntyre',
+                            'Brian Moss',
+                            'Evan Minnotte',
+                            'Mike Kennedy',
+                            'Adam Bellavance',
+                            'Erica Bern',
+                            "Sean O'Donnell",
+                            'Shirley Schmidt',
+                            'Sarah Jordon',
+                            'Cindy Schnelling',
+                            'Alex Avila',
+                            'Beth Paige',
+                            'Angele Hood',
+                            'Bryan Davis'])]
+
+
+
+df7
+
+# Export the dataframe for Visualization
+df7.to_csv('Consistency_analysis_df.csv')
+
+df2
+
+
+
+
+
+
+
+-----
