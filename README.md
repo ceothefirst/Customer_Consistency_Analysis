@@ -1,5 +1,5 @@
 # Customer_Consistency_Analysis
-> ## Business problems to Data-driven solutions
+> ## From Business problems to Data-driven decisions.
 > ***
 ##### In this project, we adopt popular Python libraries for Data Analyses, showing the different phases in a complete Data Analysis Life Cycle.
  
