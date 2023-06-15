@@ -3,9 +3,37 @@ As a Data analyst, I was tasked by a leading crypto-exchange company to analyze 
 The company's goal was to reward its most loyal customers with exclusive bonus packages based on their consistent performance in generating revenue and conducting transactions using their website.
 
 **Approach and Solution:**
+
+For better understanding, everything will be explained in a manner that helps a non-technical audience, 
+In this project, I follow the preferred model in the Google Data Analytics Certificate course to approach the problem,
+
 **The solution requires a range of tools within the data analyst/scientist toolbox. 
 One of which is a technical mindset for thinking critically and breaking down large problems into smaller steps and focusing all resources to achieving these goals, one step at a time.**
 
-For better understanding, everything will be explained in such a way that even those who have little or no experience with programming langauages can understand, 
-In this project, I follow the preferred model in the Google Data Analytics Certificate course to approach the problem,
-giving the steps and the processes involved in taking a business problem to the point where we give stakeholders value for their money.
+Let's begin with steps involved in taking a business' problem to the point where we give stakeholders value for their money.
+>>
+### 1. **Ask:**
+
+On the first day, I took the time to have a lengthy conversation with *stakeholders* and executives of the company, here we asked a lot of questions with the aim of having a deep understanding of the challenges they were facing, bearing in mind that the among these stakeholders would also be individuals who are known subject matter experts (SME).
+
+Who are  ***stakeholders*?**
+
+And who are *subject matter experts (SMEs)*?
+
+- A **stakeholder** is a person, group, or organisation with a vested interest, or stake, in the decision-making and activities of a business, organisation, or project.
+
+Also,
+
+- While data scientists can build an algorithm or a model, a **subject matter expert (SME**) is needed to identify the problem, identify its underlying intricacies, and make sure that the model does work properly and is applied correctly to whatever dataset is of interest.
+
+Now while this is not always the case, it is a likely occurrence that in a meeting with stakeholders, one would find a few SMEs present even if unannounced. To be on the safe side, we did well to communicate this with the chief executives when setting up the meeting.
+
+To achieve our goal, we have to identify two variables, ***cstmr_sales_rev*** and ***cstmr_sales_count.*** The idea is to pair our transaction data into monthly groups while sorting by **the num of transactions belonging to each customer ***(cstmr_sales_count) ****and ***the sum value of those transactions** (*cstmr_sales_rev)**.*** After doing this, we can identify an **average sales count** & **average sales_rev** for each month***.***
+
+Any customer who is able to perform above the average benchmarks would be drawn into the monthly selection***.***
+
+Finally, we would decide that for a customer to be considered as consistent, ******they would have to meet no less than 6 monthly selections for both variables. ******Confident that this would yield positive insights, we moved to the next stage of the data analysis cycle
+
+### 2. **Prepare :**
+
+After the meeting, we evaluated different factors and questions that were asked, then from all available data, we made a final list of columns that would help us reach our goal.
