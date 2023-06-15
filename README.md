@@ -1,5 +1,5 @@
 # Customer_Consistency_Analysis
-> Business problems to Data-driven solutions
+> ## Business problems to Data-driven solutions
 > ***
 In this project, we adopt popular Python libraries for Data Analyses, showing the different phases in a complete Data Analysis Life Cycle.
 Using jupyter notebook, we provide and in-depth breakdown of the processing and analysis phases of the project.
