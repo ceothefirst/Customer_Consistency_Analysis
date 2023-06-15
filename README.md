@@ -11,6 +11,7 @@
 
 
 ## Files Included
+> ***
 . Story_line : This gives a run down of the case problem and the physical steps taken to find solutions
 
 . Consistency_Analysis.ipynb : This Jupyter Notebook file has an extensive breakdown of the python techniques adopted for this project.
@@ -19,6 +20,7 @@
 
 
 ## Skills involved
+> ***
 . SQL
 
 . Python
