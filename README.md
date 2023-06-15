@@ -21,6 +21,6 @@
 ## Skills involved
 . SQL
 
-. PYTHON
+. Python
 
-. MICROSOFT POWER BI
+. Microsoft Power BI
