@@ -5,7 +5,7 @@ import seaborn as sns
 
 ### Import the Dataset
 
-#import the daatset
+#import the dataset
 df = pd.read_csv('/Users/ceo/Downloads/Query Data  - Sheet1 (1).csv')
 df
 
